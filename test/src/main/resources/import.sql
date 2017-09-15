@@ -1,0 +1,1 @@
+INSERT INTO entity (id,age) VALUES (1,20)
