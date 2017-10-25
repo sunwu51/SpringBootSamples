@@ -5,10 +5,12 @@
 本例子提供了Oauth2.0的Auth服务器同时也是Resource服务器的配置，一般而言两者可以分开也可以在一起。至于客户端Spring官网中有Oauth2.0客户端的写法。
 ## 运行本例
 `mvn spring-boot:run`  
-直接访问 post http://localhost:8080----401错误  
-  
+直接访问 post http://localhost:8080----401错误 
+
+
+#### 方法一 `password`方式获取access_token  
 获取access_token post http://c:s@localhost:8080/oauth/token  
-- 数据：
+- 数据[以form形式提交参数不要用json格式]：
  ```json
      {
          "grant_type":"password" ,
@@ -26,9 +28,33 @@
           "scope": "fuk read"
       } 
 ```  
+#### 方法二 `authorization_code`方式获取token
+get http://frank:12345@localhost:8080/oauth/authorize?response_type=code&redirect_uri=http://localhost:3000&client_id=c
+这里localhost:3000是我随便写的，用来充当调用方。调用后弹出界面问是否授权，选择授权后页面自动跳转  
+get http://localhost:3000/?code=lRXNRM  
+其中lRXNRM就是获取的code，然后调用方应该让用户的浏览器产生跳转到如下url[因为调用方没有登录状态只能让用户来完成操作]  
+post http://c:s@localhost:8080/oauth/token
+- 数据
+```json
+     {
+         "grant_type":"authorization_code" ,
+         "username":"http://localhost:3000",
+         "password":"lRXNRM"
+     }
+```  
+- 返回
+```json
+    {
+        "access_token": "7bd7acaa-116c-4c2e-8df0-38ddd99588dd",
+        "token_type": "bearer",
+        "refresh_token": "6c4550a0-ec81-4211-9042-7efbd2d04934",
+        "expires_in": 659,
+        "scope": "read fuk"
+    }
+```
+然后调用方让用户浏览器访问自己的url后面参数带上access_token和refresh_token，于是将token传给了调用方。
   
-  
-再次访问 post http://localhost:8080 
+#### 再次访问 post http://localhost:8080 
 ```
 Authorization:Bearer 90eb7963-2662-41dc-b05d-23e8d429c7b9
 ```

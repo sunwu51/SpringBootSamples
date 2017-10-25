@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -15,6 +17,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
@@ -37,7 +40,7 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
  * 然后就把这个token和这个用户相关的信息存了起来，之后通过token获取用户头像昵称，其实获取access_token同时还有refresh_token和超时时间(s)
  * 2.0token有了时效，如果下次请求头像数据的时候发现access_token超时了，就可以用refresh_token再次请求一个新的access_token而不用用户再次点授权
  */
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class Oauth2Config {
     @EnableAuthorizationServer
@@ -53,6 +56,7 @@ public class Oauth2Config {
          * 由框架提供的URL路径/oauth/authorize（授权端点）/oauth/token（令牌端点）/oauth/confirm_access（用户发布批准此处）
          * /oauth/error（用于在授权服务器中呈现错误）/oauth/check_token（由资源服务器用于解码访问令牌） ，
          * 并且/oauth/token_key（如果使用JWT令牌，则公开用于令牌验证的公钥）。
+         *
          * @param security
          * @throws Exception
          */
@@ -66,6 +70,7 @@ public class Oauth2Config {
 
         /**
          * 配置clients属性，这里直接配置在内存的变量里了，也可以选择jdbc的方式
+         *
          * @param clients
          * @throws Exception
          */
@@ -73,26 +78,28 @@ public class Oauth2Config {
         public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
             clients
                     .inMemory()
-                        .withClient("client_id") // 配置默认的client
-                        .secret("client_secret")
-                        .authorizedGrantTypes("password", "refresh_token")
-                        .scopes("read").autoApprove("read").accessTokenValiditySeconds(60*11).authorities("fly")
+                    .withClient("client_id") // 配置默认的client
+                    .secret("client_secret")
+                    .authorizedGrantTypes("password", "authorization_code", "client_credentials", "refresh_token")
+                    .scopes("read").autoApprove("read").accessTokenValiditySeconds(60 * 11).authorities("fly")
                     .and()
-                        .withClient("c")
-                        .secret("s")
-                        .authorizedGrantTypes("password","refresh_token")
-                        .scopes("fuk","read").autoApprove("fuk").accessTokenValiditySeconds(60*11)
+                    .withClient("c")
+                    .secret("s")
+                    .authorizedGrantTypes("password", "authorization_code", "client_credentials", "refresh_token")
+                    .scopes("fuk", "read").autoApprove("fuk").accessTokenValiditySeconds(60 * 11)
             ;
 
         }
 
         /**
          * 授权的详细信息，包括token存储位置，UserDetailsService等
+         *
          * @param endpoints
          * @throws Exception
          */
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+
             endpoints
                     .tokenStore(tokenStore())
                     .authenticationManager(authenticationManager)
@@ -114,13 +121,13 @@ public class Oauth2Config {
     public class ResourceConfig extends ResourceServerConfigurerAdapter {
         @Override
         public void configure(HttpSecurity http) throws Exception {
+            //在这里配置scope规则和在控制器方法上加注解效果一样，下面代码等价于TestController48行注释的部分
             http.
                     authorizeRequests()
-                        .antMatchers("/").access("#oauth2.hasScope('fuk3')")
-                        .and()
-                    .authorizeRequests()
-                        .anyRequest().permitAll()
+                    .antMatchers("/").access("#oauth2.hasScope('fuk3')")
+                    .anyRequest().permitAll()
             ;
         }
     }
+
 }
