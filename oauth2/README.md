@@ -38,8 +38,8 @@ post http://c:s@localhost:8080/oauth/token
 ```json
      {
          "grant_type":"authorization_code" ,
-         "username":"http://localhost:3000",
-         "password":"lRXNRM"
+         "redirect_uri":"http://localhost:3000",
+         "code":"lRXNRM"
      }
 ```  
 - 返回
