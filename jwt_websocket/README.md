@@ -1,0 +1,2 @@
+# JWT为Websocket做权限认证
+本例子基于websocket的例子改动
