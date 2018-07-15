@@ -6,9 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -91,6 +89,14 @@ public class ResttemplatedemoApplication implements CommandLineRunner{
 		map6.addAll("c", Arrays.asList("sdfa","fdsa"));
 		HttpEntity requestEntity3 = new HttpEntity(map6, headers3);
 		String res10 = restTemplate.postForObject(url+"/post",requestEntity3,String.class);
+
+		//通用形式 exchange 可以put delete 可以设置get header等
+		HttpHeaders headersx = new HttpHeaders();
+		headersx.set("Authorization","Bearer xxx");
+//headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MultiValueMap<String,String> mapx = new LinkedMultiValueMap<>();
+		HttpEntity requestEntityx = new HttpEntity(mapx, headersx);
+		ResponseEntity<String> res = restTemplate.exchange(url+"/get", HttpMethod.GET, requestEntityx, String.class);
 
 	}
 
