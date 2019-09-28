@@ -4,14 +4,14 @@ on: [push]
 
 jobs:
   build:
+    timeout_minutes: 4
     container: 
       image: docker://alpine
     steps:
-      - with:
-          entrypoint: tail -f /dev/null
-        run: |
+      - run: |
           echo hello
           apk add curl
+          
           
 
       
