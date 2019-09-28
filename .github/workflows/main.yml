@@ -16,6 +16,8 @@ jobs:
         run: |
           echo hello
           apk add curl
+          uname -a
+          curl https://www.baidu.com
 
           
           
