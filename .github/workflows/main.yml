@@ -7,10 +7,10 @@ jobs:
     container: 
       image: docker://alpine
     steps:
-    - timeout-minutes: 4
-      with:
-        entrypoint: tail -f /dev/null
-      run: |
+      - timeout-minutes: 4
+        with:
+          entrypoint: tail -f /dev/null
+        run: |
           echo hello
           apk add curl
           
