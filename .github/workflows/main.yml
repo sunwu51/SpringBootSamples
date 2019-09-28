@@ -10,7 +10,7 @@ jobs:
     steps:
     - timeout-minutes: 4
       with:
-      entry_point: tail -f /dev/null
+      entrypoint: tail -f /dev/null
       run: |
           echo hello
           apk add curl
