@@ -7,9 +7,9 @@ jobs:
     image: alpine
   build:
     steps:
-      run: |
-        echo hello
-        apk add curl
-      with:
-        entrypoint: tail -f /dev/null
+      - run: |
+          echo hello
+          apk add curl
+        with:
+          entrypoint: tail -f /dev/null
       
