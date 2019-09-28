@@ -6,7 +6,7 @@ jobs:
     build:
       runs-on: ubuntu-latest
       container:
-        image: docker://alpine
+        image: docker://node:8
 
       steps:
       - name: Checkout Code
@@ -14,10 +14,7 @@ jobs:
 
       - name: Validate and Upload Chart to Chart Museum
         run: |
-          echo hello
-          apk add curl
-          uname -a
-          curl https://www.baidu.com
+          node -v
 
           
           
