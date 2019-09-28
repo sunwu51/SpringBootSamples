@@ -1,0 +1,13 @@
+name: CI
+
+on: [push]
+
+jobs:
+  container: 
+    image: alpine
+  build:
+    steps:
+      run: echo hello
+    with:
+      entrypoint: tail -f /dev/null
+      
