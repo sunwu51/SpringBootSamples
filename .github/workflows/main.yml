@@ -3,9 +3,9 @@ name: CI
 on: [push]
 
 jobs:
-  container: 
-    image: alpine
   build:
+    container: 
+      image: alpine
     steps:
       - run: |
           echo hello
